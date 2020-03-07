@@ -20,11 +20,25 @@ class CommonModulusAttack:
         self.y = 0
 
     def euclideanAlgorithm(self,e1,e2):
+        if (e1 == 0):
+            return (e2, 0, 1)
+        else:
+            gcd, y, x = self.euclideanAlgorithm(e2 % e1, e1)
+            return (gcd, x - (e2 // e1) * y, y)
         '''
         Extended Euclidean Algorithm : e1 * x + e2 * y = gcd(e1,e2) 
         since gcd(e1,e2) given as 1 we need to find e1 * x + e2 * y = 1 
         '''
 
+    def attack(self, x,y):
+        return (pow(self.c1,x,self.n) * pow(self.c2,y, self.n)) % self.n
+
+    def printAll(self):
+        print("c1 : " + str(self.c1))
+        print("c2 : " + str(self.c2))
+        print("e1 : " + str(self.e1))
+        print("e2 : " + str(self.e2))
+        print("n : " + str(self.n))
 
 if __name__ == "__main__":
 
@@ -34,5 +48,10 @@ if __name__ == "__main__":
         for r in csv_reader:
             myArgs[r[0]]= r[1]
 
-    cma = CommonModulusAttack(myArgs["c1"],myArgs["c2"],myArgs["e1"],myArgs["e2"],myArgs["n"])
-    #!!!!!!!!!!!!! convert c1,c2,e1,e2,n to HEX !!! currrently these are string
+    cma = CommonModulusAttack(int(myArgs["c1"],16),int(myArgs["c2"],16),int(myArgs["e1"],16),int(myArgs["e2"],16),int(myArgs["n"],16))
+    gcd,x,y = cma.euclideanAlgorithm(cma.e1,cma.e2)
+    hex_str = format(cma.attack(x,y),'x')
+    bytes_obj = bytes.fromhex(hex_str)
+    ascii_str = bytes_obj.decode("ASCII")
+
+    print(ascii_str)
