@@ -1,4 +1,6 @@
 import csv
+import sys
+sys.setrecursionlimit(1000000)
 
 class CommonModulusAttack:
     '''
@@ -19,6 +21,13 @@ class CommonModulusAttack:
         self.x = 0 
         self.y = 0
 
+    def modinv(self, a, b):
+        """return x such that (x * a) % b == 1"""
+        g, x, _ = self.euclideanAlgorithm(a, b)
+        if g != 1:
+            raise Exception('gcd(a, b) != 1')
+        return x % b
+
     def euclideanAlgorithm(self,e1,e2):
         if (e1 == 0):
             return (e2, 0, 1)
@@ -31,7 +40,10 @@ class CommonModulusAttack:
         '''
 
     def attack(self, x,y):
-        return (pow(self.c1,x,self.n) * pow(self.c2,y, self.n)) % self.n
+        if(x < 0 and y > 0):
+            return (pow(self.modinv(self.c1,self.n),-x,self.n) * pow(self.c2,y, self.n)) % self.n
+        elif(x >0 and y <0):
+            return (pow(self.c1,x,self.n) * pow(self.modinv(self.c2,self.n),-y, self.n)) % self.n
 
     def printAll(self):
         print("c1 : " + str(self.c1))
